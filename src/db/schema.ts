@@ -1,12 +1,8 @@
 import { pgTable, text, integer, serial, timestamp } from "drizzle-orm/pg-core";
 
 export const bankStocks = pgTable("bank_stocks", {
-  name: text("name").primaryKey(),
+  stockName: text("stock_name").primaryKey(),
   quantity: integer("quantity").notNull()
-});
-
-export const wallets = pgTable("wallets", {
-  id: text("id").primaryKey()
 });
 
 export const walletStocks = pgTable("wallet_stocks", {
@@ -18,7 +14,7 @@ export const walletStocks = pgTable("wallet_stocks", {
 export const auditLog = pgTable("audit_log", {
   id: serial("id").primaryKey(),
   type: text("type").notNull(),
-  walletId: text("wallet_id"),
-  stockName: text("stock_name"),
+  walletId: text("wallet_id").notNull(),
+  stockName: text("stock_name").notNull(),
   createdAt: timestamp("created_at").defaultNow()
 });

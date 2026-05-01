@@ -1,5 +1,5 @@
 import { db } from "../db/client";
-import { bankStocks, walletStocks, wallets, auditLog } from "../db/schema";
+import { bankStocks, walletStocks, auditLog } from "../db/schema";
 import { eq, and, sql } from "drizzle-orm";
 
 export async function buy(walletId: string, stockName: string) {
@@ -7,7 +7,7 @@ export async function buy(walletId: string, stockName: string) {
     const stock = await tx
       .select()
       .from(bankStocks)
-      .where(eq(bankStocks.name, stockName))
+      .where(eq(bankStocks.stockName, stockName))
       .for("update");
 
     if (!stock.length) throw new Error("NOT_FOUND");
@@ -16,9 +16,9 @@ export async function buy(walletId: string, stockName: string) {
     await tx
       .update(bankStocks)
       .set({ quantity: sql`${bankStocks.quantity} - 1` })
-      .where(eq(bankStocks.name, stockName));
+      .where(eq(bankStocks.stockName, stockName));
 
-    await tx.insert(wallets).values({ id: walletId }).onConflictDoNothing();
+    // await tx.insert(walletStocks).values({ walletId, quantity }).onConflictDoNothing();
 
     await tx
       .insert(walletStocks)
@@ -43,7 +43,7 @@ export async function sell(walletId: string, stockName: string) {
     const stock = await tx
       .select()
       .from(bankStocks)
-      .where(eq(bankStocks.name, stockName))
+      .where(eq(bankStocks.stockName, stockName))
       .for("update");
 
     if (!stock.length) throw new Error("NOT_FOUND");
@@ -76,7 +76,7 @@ export async function sell(walletId: string, stockName: string) {
     await tx
       .update(bankStocks)
       .set({ quantity: sql`${bankStocks.quantity} + 1` })
-      .where(eq(bankStocks.name, stockName));
+      .where(eq(bankStocks.stockName, stockName));
 
     await tx.insert(auditLog).values({
       type: "sell",

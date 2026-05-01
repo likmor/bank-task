@@ -1,12 +1,13 @@
 import Fastify from "fastify";
-import walletRoutes from "./wallet/wallet.routes";
-import bankRoutes from "./bank/bank.routes";
-import auditRoutes from "./audit/audit.routes";
+import {walletRoutes} from "./wallet/wallet.routes";
+import {bankRoutes} from "./bank/bank.routes";
+import {auditRoutes} from "./audit/audit.routes";
 import chaosRoutes from "./chaos/chaos.routes";
 import health from "./health";
+import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 
 export function buildApp() {
-  const app = Fastify();
+  const app = Fastify().withTypeProvider<TypeBoxTypeProvider>();
 
   app.register(health);
   app.register(walletRoutes);
